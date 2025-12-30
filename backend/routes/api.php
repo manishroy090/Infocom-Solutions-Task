@@ -3,13 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\TemplatesController;
 
 
 
 
 Route::prefix('auth')->group(function () {
     Route::controller(AuthController::class)->group(function () {
-        Route::post('login', 'login');
+        Route::post('login', 'login')->name('login');
         Route::post('register', 'register');
     });
 });
@@ -21,3 +22,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('me', 'me');
     });
 });
+
+
+Route::group(['middleware'=>['auth:api','authorization'],'prefix'=>"templates"],function(){
+ Route::controller(TemplatesController::class)->group(function () {
+        Route::get('index', 'index');
+        Route::post('store', 'store');
+        Route::get('edit/{id}', 'edit');
+        Route::put('/update/{id}','update');
+        Route::get('delete', 'delete');
+    });
+});
+

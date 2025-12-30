@@ -1,0 +1,48 @@
+[
+  {
+    "id": 1,
+    "key": "admin",
+    "name": "Admin",
+    "description": "Full system access and management",
+    "permissions": [
+      "dashboard.view",
+      "users.create",
+      "users.read",
+      "users.update",
+      "users.delete",
+      "roles.manage",
+      "settings.manage",
+      "reports.view"
+    ]
+  },
+  {
+    "id": 2,
+    "key": "hr",
+    "name": "HR",
+    "description": "Manage employees and HR operations",
+    "permissions": [
+      "dashboard.view",
+      "employees.create",
+      "employees.read",
+      "employees.update",
+      "employees.delete",
+      "attendance.manage",
+      "leave.manage",
+      "payroll.view"
+    ]
+  },
+  {
+    "id": 3,
+    "key": "employee",
+    "name": "Employee",
+    "description": "Employee self-service access",
+    "permissions": [
+      "dashboard.view",
+      "profile.read",
+      "profile.update",
+      "attendance.view",
+      "leave.apply",
+      "payroll.view"
+    ]
+  }
+]

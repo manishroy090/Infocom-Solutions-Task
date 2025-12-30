@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "key": "dashboard.view",
+    "name": "View Dashboard",
+    "module": "Dashboard"
+  },
+
+  {
+    "id": 2,
+    "key": "users.create",
+    "name": "Create Users",
+    "module": "Users"
+  },
+  {
+    "id": 3,
+    "key": "users.read",
+    "name": "View Users",
+    "module": "Users"
+  },
+  {
+    "id": 4,
+    "key": "users.update",
+    "name": "Update Users",
+    "module": "Users"
+  },
+  {
+    "id": 5,
+    "key": "users.delete",
+    "name": "Delete Users",
+    "module": "Users"
+  },
+
+  {
+    "id": 6,
+    "key": "employees.create",
+    "name": "Create Employees",
+    "module": "Employees"
+  },
+  {
+    "id": 7,
+    "key": "employees.read",
+    "name": "View Employees",
+    "module": "Employees"
+  },
+  {
+    "id": 8,
+    "key": "employees.update",
+    "name": "Update Employees",
+    "module": "Employees"
+  },
+  {
+    "id": 9,
+    "key": "employees.delete",
+    "name": "Delete Employees",
+    "module": "Employees"
+  },
+
+  {
+    "id": 10,
+    "key": "attendance.view",
+    "name": "View Attendance",
+    "module": "Attendance"
+  },
+  {
+    "id": 11,
+    "key": "attendance.manage",
+    "name": "Manage Attendance",
+    "module": "Attendance"
+  },
+
+  {
+    "id": 12,
+    "key": "leave.apply",
+    "name": "Apply Leave",
+    "module": "Leave"
+  },
+  {
+    "id": 13,
+    "key": "leave.manage",
+    "name": "Manage Leave",
+    "module": "Leave"
+  },
+
+  {
+    "id": 14,
+    "key": "payroll.view",
+    "name": "View Payroll",
+    "module": "Payroll"
+  },
+
+  {
+    "id": 15,
+    "key": "roles.manage",
+    "name": "Manage Roles",
+    "module": "Roles & Permissions"
+  },
+  {
+    "id": 16,
+    "key": "settings.manage",
+    "name": "Manage Settings",
+    "module": "System"
+  },
+  {
+    "id": 17,
+    "key": "reports.view",
+    "name": "View Reports",
+    "module": "Reports"
+  }
+]
