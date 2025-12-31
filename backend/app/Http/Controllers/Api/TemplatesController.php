@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Templates;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\Controller;
+
 
 
 class TemplatesController extends Controller
@@ -152,4 +154,6 @@ class TemplatesController extends Controller
           Gate::authorize('template.delete');
         
     }
+
+
 }

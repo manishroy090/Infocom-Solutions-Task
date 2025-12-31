@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 
+
 const FIELD_TYPES = [
   "text",
   "email",
@@ -65,13 +66,14 @@ export default function Page() {
       name: templateName,
       schema: fields
     };
+    const token = localStorage.getItem('token');
     fetch(`http://127.0.0.1:8000/api/templates/store`, {
       method: 'POST',
+      credentials: "include",
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document
-          .querySelector('meta[name="csrf-token"]')
-          .getAttribute('content')
+           Authorization: `Bearer ${token}`,
+
       },
       body: JSON.stringify(payload)
     }).then(async (res) => {

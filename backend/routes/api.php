@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\TemplatesController;
+use App\Http\Controllers\Api\TemplatesController;
+use App\Http\Controllers\Api\FormSubmissionController;
 
 
 
@@ -34,3 +35,12 @@ Route::group(['middleware'=>['auth:api','authorization'],'prefix'=>"templates"],
     });
 });
 
+
+Route::group(['middleware'=>['auth:api','authorization'],'prefix'=>"formsubmission"],function(){
+ Route::controller(FormSubmissionController::class)->group(function () {
+        Route::get('getschema', 'getSchema');
+        Route::post('store', 'store');
+        Route::get('store', 'excelImport');
+        Route::get('store', 'excelImport');
+    });
+});
