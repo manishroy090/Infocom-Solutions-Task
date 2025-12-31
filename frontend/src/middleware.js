@@ -21,25 +21,25 @@ export function middleware(request) {
 
   const path = request.nextUrl.pathname;
 
-  // Admin-only route
-  if (
-    path.startsWith("/dashboard/usersmanagement") &&
-    user?.role_name !== "Admin"
-  ) {
-    return NextResponse.redirect(
-      new URL("/unauthorized", request.url)
-    );
-  }
+  // // Admin-only route
+  // if (
+  //   path.startsWith("/dashboard/usersmanagement") &&
+  //   user?.role_name !== "Admin"
+  // ) {
+  //   return NextResponse.redirect(
+  //     new URL("/unauthorized", request.url)
+  //   );
+  // }
 
 
-  if (
-    path.startsWith("/dashboard/templates") &&
-    !["Admin", "HR"].includes(user?.role_name)
-  ) {
-    return NextResponse.redirect(
-      new URL("/unauthorized", request.url)
-    );
-  }
+  // if (
+  //   path.startsWith("/dashboard/templates") &&
+  //   !["Admin", "HR"].includes(user?.role_name)
+  // ) {
+  //   return NextResponse.redirect(
+  //     new URL("/unauthorized", request.url)
+  //   );
+  // }
 
   return NextResponse.next();
 }
