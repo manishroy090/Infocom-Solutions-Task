@@ -78,8 +78,8 @@ export default function Page() {
           },
           body: JSON.stringify({
             template_id:template.id,
-            formdata: formData,
-            employee_id:1
+            employee_id:1,
+            ...formData,
           }),
         }
       );

@@ -6,23 +6,22 @@ import { useEffect } from "react";
 
 
 export default function RootLayout({ children }) {
-
-
+   const {setUser,user, loading ,setToken,token} = useAuth();
+ 
   return (
-    <html lang="en">
-      <body className="h-screen overflow-hidden">
+      <div className="h-screen overflow-hidden">
         <div className="flex h-full">
 
           {/* Sidebar */}
           <Sidebar />
 
           {/* Main Content */}
-          <main className="flex-1 ml-64 h-screen overflow-y-auto bg-slate-100 p-4">
+          <main className="flex-1 ml-64 h-screen overflow-y-auto bg-slate-100 p-4 text-black">
             {children}
           </main>
 
         </div>
-      </body>
-    </html>
+      </div>
+  
   );
 }

@@ -8,7 +8,14 @@ use App\Models\Templates;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\TemplateStoreRequest;
+use App\Http\Requests\TemplateUpdateRequest;
+use Illuminate\Support\Facades\Log;
+use App\Repositories\TemplatesRepository;
+use Nette\Utils\Json;
+use App\Exports\ExcelExport;
+use App\Imports\ExcelImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class TemplatesController extends Controller
@@ -16,7 +23,12 @@ class TemplatesController extends Controller
     public $message;
     public $code;
 
+    public $templatesRepository;
 
+    public function __construct(TemplatesRepository $templatesRepository)
+    {
+        $this->templatesRepository = $templatesRepository;
+    }
 
     public function index()
     {
@@ -27,54 +39,30 @@ class TemplatesController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(TemplateStoreRequest $request)
     {
         Gate::authorize('template.store');
-        $validator =   Validator::make($request->all(), [
-            'name' => 'required',
-            'schema' => "required",
-            'schema.*.label' => "required",
-            'schema.*.placeholder' => "required",
-            'schema.*.options' => [
-                'nullable',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $type = $request->schema[$index]['type'] ?? null;
-
-                    if (in_array($type, ['select', 'radio'])) {
-                        if (! is_array($value) || count($value) < 1) {
-                            $fail('Options must be a non-empty array when type is select or radio');
-                        }
-                    }
-                }
-            ],
-            'schema.*.type' => 'required'
-        ], [
-            'name.required' => 'Name is required',
-            'schema.required' => "Schema is required",
-            'schema.*.label' => "Schema label is required",
-            'schema.*.options.required_if' => 'Options are required when type is option',
-            'schema.*.placeholder' => "Schema Placeholder is required",
-            'schema.*.type' => "Schema type is required",
-        ]);
-        if ($validator->fails()) {
-            $this->message = 422;
-            return response()->json([
-                'validation_error' => $validator->messages()
-            ], $this->message);
-        }
+        $validated = $request->validated();
         try {
             $this->code = 201;
-            Templates::create($validator->validate());
-            return response()->json([
+            $data = [
+                'name' => $validated['name'],
+                'schema' => json_encode($validated['schema'])
+            ];
+            $this->templatesRepository->store($data);
+            $response = [
                 'message' => "Templates created successfully"
-            ], $this->code);
+            ];
+            Log::info($response);
         } catch (\Throwable $th) {
+            log::error($th->getMessage());
             $this->code = 500;
-            return response()->json([
-                'message' => "something went wrong"
-            ], $this->code);
+            $response = [
+                'message' => "Something went"
+            ];
         }
+
+        return response()->json($response, $this->code);
     }
 
 
@@ -82,78 +70,83 @@ class TemplatesController extends Controller
     {
         Gate::authorize('template.edit');
         try {
-            $templates = Templates::where('id', $id)->first();
+            $templates = $this->templatesRepository->edit($id);
             $this->code = 200;
+            $response = [
+                'message' => "Template fetched successfully",
+                "templates" =>  $templates
+            ];
         } catch (\Throwable $th) {
             $this->code = 500;
+            $response = [
+                'message' => "Unable to fetch template",
+                "templates" => []
+            ];
         }
-
-        return response()->json([
-            'templates' => $templates
-        ], $this->code);
+        return response()->json($response, $this->code);
     }
 
 
 
-    public function update(Request $request,$id)
+    public function update(TemplateUpdateRequest $request, $id)
     {
-     Gate::authorize('template.update');
-
-        $validator =   Validator::make($request->all(), [
-            'name' => 'required',
-            'schema' => "required",
-            'schema.*.label' => "required",
-            'schema.*.placeholder' => "required",
-            'schema.*.options' => [
-                'nullable',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $type = $request->schema[$index]['type'] ?? null;
-
-                    if (in_array($type, ['select', 'radio'])) {
-                        if (! is_array($value) || count($value) < 1) {
-                            $fail('Options must be a non-empty array when type is select or radio');
-                        }
-                    }
-                }
-            ],
-            'schema.*.type' => 'required'
-        ], [
-            'name.required' => 'Name is required',
-            'schema.required' => "Schema is required",
-            'schema.*.label' => "Schema label is required",
-            'schema.*.options.required_if' => 'Options are required when type is option',
-            'schema.*.placeholder' => "Schema Placeholder is required",
-            'schema.*.type' => "Schema type is required",
-        ]);
-
-
-        if ($validator->fails()) {
-            $this->message = 422;
-            return response()->json([
-                'validation_error' => $validator->messages()
-            ], $this->message);
-        }
+        Gate::authorize('template.update');
+        $validated = $request->validated();
         try {
             $this->code = 201;
-            Templates::where('id',$id)->update($validator->validate());
-            return response()->json([
-                'message' => "Templates updated successfully"
-            ], $this->code);
+            $this->templatesRepository->update($validated, $id);
+            $response = [
+                'message' => "Templates updated successfully",
+            ];
+            Log::info($response);
         } catch (\Throwable $th) {
+            log::error($th->getMessage());
             $this->code = 500;
-            return response()->json([
-                'message' => "something went wrong"
-            ], $this->code);
+            $response = [
+                'message' => "Something went wrong",
+            ];
         }
+
+        return response()->json($response, $this->code);
     }
 
 
-  
-    public function delete() {
-          Gate::authorize('template.delete');
-        
+
+    public function delete()
+    {
+        Gate::authorize('template.delete');
     }
 
+    public function export($id)
+    {
+        return Excel::download(
+            new ExcelExport($id),
+            "template_{$id}_submissions.xlsx"
+        );
+    }
 
+    public function import(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        try {
+            Excel::queueImport(
+                new ExcelImport($id),
+                $request->file('file')
+            );
+            $response =    [
+                'message' => 'Import started successfully'
+            ];
+            $code = 201;
+        } catch (\Throwable $th) {
+            $response =   [
+                'message' => 'Import started successfully'
+            ];
+            $code = 500;
+        }
+
+        return  response()->json($response,$code);
+    }
 }

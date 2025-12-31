@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams,useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";7
+import CloseIcon from '@mui/icons-material/Close';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+
 const FIELD_TYPES = [
   "text",
   "email",
@@ -16,7 +20,7 @@ const FIELD_TYPES = [
 ];
 
 export default function Page({ params }) {
-   const router = useRouter();
+  const router = useRouter();
   const [templateName, setTemplateName] = useState("");
   const [fields, setFields] = useState([]);
   const { id } = useParams();
@@ -26,7 +30,13 @@ export default function Page({ params }) {
 
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/templates/edit/${TEMPLATE_ID}`)
+    const token = localStorage.getItem("token");
+
+    fetch(`http://127.0.0.1:8000/api/templates/edit/${TEMPLATE_ID}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(res => res.json())
       .then(data => {
         setTemplateName(data.templates.name);
@@ -101,14 +111,15 @@ export default function Page({ params }) {
           f.type === "select" || f.type === "radio" ? f.options : null,
       })),
     };
+    const token = localStorage.getItem('token');
 
-    fetch(`http://127.0.0.1:8000/api/templates/update/${3}`, {
+    fetch(`http://127.0.0.1:8000/api/templates/update/${TEMPLATE_ID}`, {
       method: "PUT", // or PUT if update
+      credentials: "include",
       headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-TOKEN": document
-          .querySelector('meta[name="csrf-token"]')
-          .getAttribute("content"),
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+
       },
       body: JSON.stringify(payload),
     }).then(async (res) => {
@@ -132,9 +143,8 @@ export default function Page({ params }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-black">
-      {/* ================= BUILDER ================= */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">🧩 Form Builder</h2>
+        <h2 className="text-xl font-semibold mb-4"><FormatListBulletedIcon/> Form Builder</h2>
         <div className="flex flex-col">
 
           <input
@@ -167,7 +177,7 @@ export default function Page({ params }) {
                   onClick={() => removeField(field.id)}
                   className="text-red-500"
                 >
-                  ❌
+                  <CloseIcon/>
                 </button>
               </div>
               <div className="flex flex-col">
@@ -259,7 +269,7 @@ export default function Page({ params }) {
       </div>
 
       <div className="sticky top-6 h-fit">
-        <h2 className="text-xl font-semibold mb-4">👁️ Live Preview</h2>
+        <h2 className="text-xl font-semibold mb-4"><RemoveRedEyeIcon/> Live Preview</h2>
 
         <form className="bg-white border rounded-xl p-6 space-y-4">
           {fields.map(field => (

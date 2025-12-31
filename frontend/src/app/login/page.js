@@ -38,8 +38,8 @@ export default function Login() {
       const meRes = await fetch("http://localhost:8000/api/me", {
         credentials: "include",
       });
-
       const userData = await meRes.json();
+      console.log(userData);
       setUser(userData);
     } catch (err) {
       setError("Invalid email or password");

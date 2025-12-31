@@ -32,6 +32,8 @@ Route::group(['middleware'=>['auth:api','authorization'],'prefix'=>"templates"],
         Route::get('edit/{id}', 'edit');
         Route::put('/update/{id}','update');
         Route::get('delete', 'delete');
+        Route::get('{id}/export','export');
+        Route::post('{id}/import','import');
     });
 });
 
@@ -40,7 +42,5 @@ Route::group(['middleware'=>['auth:api','authorization'],'prefix'=>"formsubmissi
  Route::controller(FormSubmissionController::class)->group(function () {
         Route::get('getschema', 'getSchema');
         Route::post('store', 'store');
-        Route::get('store', 'excelImport');
-        Route::get('store', 'excelImport');
     });
 });

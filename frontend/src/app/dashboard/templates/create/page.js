@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-
+import CloseIcon from '@mui/icons-material/Close';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 const FIELD_TYPES = [
   "text",
@@ -97,10 +98,8 @@ export default function Page() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-black">
-
-
       <div>
-        <h2 className="text-xl font-semibold mb-4">🧩 Form Builder</h2>
+        <h2 className="text-xl font-semibold mb-4"><FormatListBulletedIcon/> Form Builder</h2>
         <div className="flex flex-col justify-around">
           <input
             placeholder="Template name"
@@ -132,7 +131,7 @@ export default function Page() {
                   onClick={() => removeField(field.id)}
                   className="text-red-500"
                 >
-                  ❌
+                  <CloseIcon/>
                 </button>
               </div>
 
@@ -223,7 +222,7 @@ export default function Page() {
       </div>
 
       <div className="sticky top-6 h-fit">
-        <h2 className="text-xl font-semibold mb-4">👁️ Live Preview</h2>
+        <h2 className="text-xl font-semibold mb-4"><RemoveRedEyeIcon/> Live Preview</h2>
 
         <form className="bg-white border rounded-xl p-6 space-y-4">
           {fields.map(field => (

@@ -8,10 +8,21 @@ use App\Models\Templates;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\FormSubmission;
-
+use App\Http\Requests\FormSubmissionStore;
+use App\Repositories\FormSubmissionRepository;
+use Illuminate\Support\Facades\Gate;
 
 class FormSubmissionController extends Controller
 {
+
+  public $formSubmissionRepository;
+  public $code;
+
+
+  public function __construct(FormSubmissionRepository $formSubmissionRepository)
+  {
+    $this->formSubmissionRepository = $formSubmissionRepository;
+  }
   public function getSchema()
   {
     $template =  Templates::first();
@@ -20,72 +31,33 @@ class FormSubmissionController extends Controller
     ], 200);
   }
 
-  public function store(Request $request)
+  public function store(FormSubmissionStore $request)
   {
-    $template = Templates::where('id', $request->template_id)->get();
-    $fields = $template[0]['schema'];
-    foreach ($fields as $key => $field) {
-      $rule = [];
-      if ($field['required']) {
-        $rule[] = 'required';
-      } else {
-        $rule[] = 'nullable';
-      }
-      switch ($field['type']) {
-        case 'text':
-          $rule[] = 'string';
-          break;
 
-        case 'email':
-          $rule[] = 'email';
-          break;
-        case 'number':
-          $rule[] = 'numeric';
-          break;
-        case 'date':
-          $rule[] = 'date';
-          break;
-        case 'file':
-          $rule[] = 'file';
-          $rule[] = 'max:2048';
-          break;
-      }
-
-      $fieldKey =str_replace(" ", "", strtolower($field['label']));
-      log::info($fieldKey );
-      $rules[$fieldKey] = implode('|', $rule);
-      $messages[$fieldKey] =
-        "{$field['label']} is required";
-    }
-    $validating =  Validator::make($request['formdata'], $rules, $messages);
-    if ($validating->fails()) {
-      return response()->json([
-        "validation_error" =>  $validating->messages()
-      ], 422);
-    }
-
+     Gate::authorize('form.submission');
+    $validated = $request->validated();
+    $formData = $request->except(['template_id', 'employee_id']);
     try {
-      
       $formSubmission = [
-        'template_id'=>$request->template_id,
-        'employee_id'=>$request->employee_id,
-        'data'=>json_encode($validating->validate())
+        'template_id' => $validated['template_id'],
+        'employee_id' => $validated['employee_id'],
+        'data' => json_encode($formData)
       ];
-
-     FormSubmission::insert($formSubmission);
-      return response()->json([
-        'message'=>"Form submitted successfully"
-      ],201);
-
+      $this->formSubmissionRepository->store($formSubmission);
+      $response = [
+        'message' => "Form submitted successfully"
+      ];
+      $this->code = 201;
+      log::info(['code'=>$this->code, 'message'=>$response['message']]);
     } catch (\Throwable $th) {
-       return response()->json([
-        'message'=>$th->getMessage()
-      ],500);
+
+      $response = [
+        'message' => "Something went wrong"
+      ];
+      $this->code = 500;
+      log::info(['code'=>$this->code, 'message'=>$th->getMessage()]);
     }
+
+    return response()->json($response, $this->code);
   }
-
-
-  public function excelImport() {}
-
-  public function excelExport() {}
 }
