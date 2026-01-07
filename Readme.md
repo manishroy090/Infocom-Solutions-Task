@@ -200,13 +200,4 @@ Frontend implementation is minimal and primarily serves as a consumer of the bac
 ✔ Excel import with chunk & queue processing
 ✔ Clean and scalable backend architecture
 
----
 
-If you want next, I can:
-
-* Rewrite this as a **technical assignment submission**
-* Add **API endpoint documentation**
-* Add **architecture diagram explanation**
-* Make it **more concise for HR / CEO review**
-
-Just tell me 👌
